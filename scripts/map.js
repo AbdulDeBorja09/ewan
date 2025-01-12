@@ -22,6 +22,10 @@ fetch("src/map2.svg")
     let initialDistance = 0;
     let initialViewBox = { ...viewBox };
 
+    let isRotating = false;
+    let initialAngle = 0;
+    let currentAngle = 0;
+
     const updateViewBox = () => {
       svg.setAttribute(
         "viewBox",
@@ -38,6 +42,12 @@ fetch("src/map2.svg")
       const dx = touch2.clientX - touch1.clientX;
       const dy = touch2.clientY - touch1.clientY;
       return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const getAngle = (touch1, touch2) => {
+      const dx = touch2.clientX - touch1.clientX;
+      const dy = touch2.clientY - touch1.clientY;
+      return Math.atan2(dy, dx) * (180 / Math.PI); // Angle in degrees
     };
 
     // Dragging with mouse
@@ -92,7 +102,7 @@ fetch("src/map2.svg")
       updateViewBox();
     });
 
-    // Touch dragging and pinch-to-zoom
+    // Touch dragging, pinch-to-zoom, and rotation
     svg.addEventListener("touchstart", (event) => {
       if (event.touches.length === 1) {
         isDragging = true;
@@ -100,13 +110,14 @@ fetch("src/map2.svg")
       } else if (event.touches.length === 2) {
         isDragging = false;
         initialDistance = getDistance(event.touches[0], event.touches[1]);
+        initialAngle = getAngle(event.touches[0], event.touches[1]);
         initialViewBox = { ...viewBox };
       }
     });
 
     svg.addEventListener("touchmove", (event) => {
       event.preventDefault();
-      if (isDragging && event.touches.length === 1) {
+      if (event.touches.length === 1 && isDragging) {
         const touchPoint = getTouchPoint(event);
         const dx =
           (startPoint.x - touchPoint.x) * (viewBox.width / svg.clientWidth);
@@ -119,28 +130,28 @@ fetch("src/map2.svg")
       } else if (event.touches.length === 2) {
         const newDistance = getDistance(event.touches[0], event.touches[1]);
         const zoomFactor = newDistance / initialDistance;
+
+        const newAngle = getAngle(event.touches[0], event.touches[1]);
+        const angleDelta = newAngle - initialAngle;
+
         const centerX =
           (event.touches[0].clientX + event.touches[1].clientX) / 2;
         const centerY =
           (event.touches[0].clientY + event.touches[1].clientY) / 2;
 
-        const zoomCenterX =
-          (centerX / svg.clientWidth) * initialViewBox.width + initialViewBox.x;
-        const zoomCenterY =
-          (centerY / svg.clientHeight) * initialViewBox.height +
-          initialViewBox.y;
-
-        viewBox.width = initialViewBox.width / zoomFactor;
-        viewBox.height = initialViewBox.height / zoomFactor;
-        viewBox.x = zoomCenterX - (centerX / svg.clientWidth) * viewBox.width;
-        viewBox.y = zoomCenterY - (centerY / svg.clientHeight) * viewBox.height;
-
-        updateViewBox();
+        svg.style.transformOrigin = `${centerX}px ${centerY}px`;
+        svg.style.transform = `rotate(${
+          currentAngle + angleDelta
+        }deg) scale(${zoomFactor})`;
       }
     });
 
-    svg.addEventListener("touchend", () => {
-      isDragging = false;
+    svg.addEventListener("touchend", (event) => {
+      if (event.touches.length === 0) {
+        isDragging = false;
+        currentAngle +=
+          getAngle(event.touches[0], event.touches[1]) - initialAngle;
+      }
     });
 
     updateViewBox();
