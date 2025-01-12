@@ -1,6 +1,6 @@
 const container = document.getElementById("svg-container");
 
-fetch("src/map.svg")
+fetch("src/map2.svg")
   .then((response) => response.text())
   .then((svgContent) => {
     container.innerHTML = svgContent;
