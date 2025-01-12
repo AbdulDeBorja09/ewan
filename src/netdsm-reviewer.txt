@@ -1,0 +1,86 @@
+1. add ng server (server-pt server0)
+2. add ng router (1841 router0)
+3. add ng wireless router (wrt300n router0)
+4. add ng 3 laptop
+
+1. CONNECTION
+copper cross-over
+f0 (server) - f0/0 (router)
+f0/1 (router) - internet (wireless router)
+
+2. SERVER
+/desktop > ip configuration:
+radio button - static
+ipv4 - 192.168.0.1
+sm - 255.255.255.252
+default gateway - 192.168.0.2
+
+/services > dns:
+dns service -> on
+name - netdsm.com
+address - 192.168.0.1
+add
+
+3. ROUTER
+/cli
+ena
+conf t
+int f0/0
+ip add  192.168.0.2 255.255.255.252
+no sh
+
+ex
+int f0/1
+ip add 192.168.0.5 255.255.255.252
+no sh
+do wr
+
+4. WIRELESS ROUTER
+/config > lan
+192.168.1.1
+255.255.255.0
+
+/internet
+radio button -> static
+ipv4: 192.168.0.6
+sm: 255.255.255.252
+default: 192.168.0.5
+dns: 192.168.0.1
+
+/gui
+upper:
+internet ip address: 192.168.0.6
+subnet mask: 255.255.255.252
+default: 192.168.0.5
+
+start ip address: 100
+maximum number of users: 50
+
+lower:
+static dns: 192.168.0.1
+then save
+
+/config > wireless
+SSID: My wifi (any name)
+
+radio button -> wpa2-psk
+psk pass phrase: netdsm12345 (any pass)
+
+a. laptop
+off first
+then remove dvd (?)
+then add receiver (under)
+
+/cli
+desktop
+connection
+pc wireless > My wifi > connect > netdsm12345
+ 
+b. smartphone/tablet
+config > wireless0
+SSID: My wifi
+wpa2-psk: netdsm12345
+
+browser
+type netdsm.com
+
