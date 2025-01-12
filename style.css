@@ -39,6 +39,7 @@ nav img {
   border-radius: 50px;
   border: 1px solid black;
   padding-top: 2px;
+  background-color: white;
 }
 .floors ul li a {
   background-color: white;
@@ -47,7 +48,7 @@ nav img {
   text-decoration: none;
 }
 .floors ul li.active,
-.floors ul li.active a{
+.floors ul li.active a {
   color: white;
   background-color: #00b4d8;
 }
