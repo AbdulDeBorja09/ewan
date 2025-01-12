@@ -29,7 +29,7 @@ nav img {
 }
 .floors {
   position: fixed;
-  bottom: 10%;
+  bottom: 15%;
 }
 .floors ul li {
   width: 30px;
@@ -159,6 +159,7 @@ nav img {
 #svg-container #svg-container svg {
   cursor: grab;
   user-select: none;
+  touch-action: none;
 }
 #svg-container svg:active {
   cursor: grabbing;
